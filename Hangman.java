@@ -14,22 +14,32 @@ public class Hangman {
     gameStatus is a series of underscores (_) that displays how close the user is to victory.
     wordToGuess is the randomly selected String from words that the user plays with.
     lives is how many errors the player is allowed to make, which is six to simulate
-    a stickman's head, body, both arms, and both legs. Game Over occurs when lives hit zero.
+    a stickman's head, body, both arms, and both legs.
+    Game Over occurs when lives hit zero or when all of gameStatus' underscores have
+    been replaced with the proper letters.
     */
     
     public static Scanner scan = new Scanner(System.in);
     public static String[] words, guessedLetters, gameStatus;
     public static String wordToGuess, intro;
-    public static int lives = 6;
+    public static int lives, streak = 0, highestStreak = 0;
     
     public static void main(String[] args) {
         boolean livesLeft = true;
-        init();
+        init(true);
+        clearCMD();
         System.out.println(intro);
         
         while (livesLeft) {
             // Main game loop
             
+            // Prints out the hangman ascii art
+            printHangmanASCII();
+            
+            /*
+            The following two for loops print out both the underscores/correctly
+            guessed letters and the incorrectly guessed letters.
+            */
             System.out.println("\n\n");
             for (int i = 0; i < gameStatus.length; i++) {
                 System.out.print(gameStatus[i]);
@@ -44,25 +54,52 @@ public class Hangman {
             boolean allLettersGuessed = answerCheck();
             if (lives <= 0 || allLettersGuessed)
                 livesLeft = false;
-        }
-        
-        if (lives <= 0) {
-            System.out.println("Game Over!\nSorry, but you guessed six incorrect letters. You lose.\nThe word was \"" + wordToGuess + "\".");
-        } else {
-            System.out.println("CONGRATULATIONS! You guessed the word! It was \"" + wordToGuess + "\".");
+            
+            if (!livesLeft) {
+                printHangmanASCII();
+
+                if (lives <= 0) {
+                    System.out.println("Game Over!\nSorry, but you guessed six incorrect letters. You lose.\nThe word was \"" + wordToGuess + "\".");
+                    if (streak > 1)
+                        System.out.println("This loss ended your winning streak of " + streak + " games won in a row.");
+                    highestStreakChecker();
+                    streak = 0;
+                } else {
+                    System.out.println("CONGRATULATIONS! You guessed the word! It was \"" + wordToGuess + "\".");
+                    streak++;
+                    if (streak > 1)
+                        System.out.println("You're on a winning streak! You've won " + streak + " games in a row!");
+                    highestStreakChecker();
+                }
+                
+                System.out.println("Would you like to play again? Type [Y] to play again:");
+                String playAgain = scan.nextLine().toUpperCase().trim();
+                if (playAgain.equals("Y")) {
+                    livesLeft = true;
+                    init(false);
+                    clearCMD();
+                    System.out.println(intro);
+                } else {
+                    System.out.println("It was fun playing with you! You're highest winning streak was " + highestStreak + " games won in row! Goodbye!");
+                }
+            }
         }
     }
     
-    public static void init() {
+    public static void init(boolean b) {
         /*
         This initialization method loads a dictionary of words into
         String[] words for random selection later on. The method also
         chooses a random word for the user to begin guessing.
+        Boolean b is false when the player has finished a game and has
+        chosen to play again, and tells the program to not reload the
+        dictionary into String[] words.
         */
         
-        words = loadWordsFromFile();
-        // Debugging print statement
-        //System.out.println("\n\n\nWord count:\t" + words.length + "\nFirst word:\t" + words[0] + "\nLast word:\t" + words[words.length - 1]);
+        if (b) {
+            clearCMD();
+            words = loadWordsFromFile();
+        }
         
         Random r = new Random();
         wordToGuess = words[r.nextInt(words.length)].toUpperCase();
@@ -73,6 +110,7 @@ public class Hangman {
             gameStatus[i] = "_ ";
         }
         
+        lives = 6;
         intro = "Welcome to Hangman! The rules are simple:\n"
                 + "Below are blank lines that represent letters\n"
                 + "in a word. Your goal is to guess the letters\n"
@@ -188,6 +226,8 @@ public class Hangman {
             }
             
         }
+        clearCMD();
+        System.out.println(intro);
     }
 
     public static boolean answerCheck() {
@@ -196,6 +236,95 @@ public class Hangman {
                 return false;
         }
         return true;
+    }
+
+    public static void printHangmanASCII() {
+        
+        /*
+        ASCII art was used from chrishorton's GitHub post, found at
+        https://gist.github.com/chrishorton/8510732aa9a80a03c829b09f12e20d9c
+        */
+        
+        switch (lives) {
+            case 0:
+                System.out.println("\n  +---+\n"
+                                + "  |   |\n"
+                                + "  O   |\n"
+                                + " /|\\  |\n"
+                                + " / \\  |\n"
+                                + "      |\n"
+                                + "=========");
+                break;
+            case 1:
+                System.out.println("\n  +---+\n"
+                                + "  |   |\n"
+                                + "  O   |\n"
+                                + " /|\\  |\n"
+                                + " /    |\n"
+                                + "      |\n"
+                                + "=========");
+                break;
+            case 2:
+                System.out.println("\n  +---+\n"
+                                + "  |   |\n"
+                                + "  O   |\n"
+                                + " /|\\  |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "=========");
+                break;
+            case 3:
+                System.out.println("\n  +---+\n"
+                                + "  |   |\n"
+                                + "  O   |\n"
+                                + " /|   |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "=========");
+                break;
+            case 4:
+                System.out.println("\n  +---+\n"
+                                + "  |   |\n"
+                                + "  O   |\n"
+                                + "  |   |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "=========");
+                break;
+            case 5:
+                System.out.println("\n  +---+\n"
+                                + "  |   |\n"
+                                + "  O   |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "=========");
+                break;
+            case 6:
+                System.out.println("\n  +---+\n"
+                                + "  |   |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "      |\n"
+                                + "=========");
+                break;
+        }
+    }
+    
+    public static void clearCMD() {
+        try {
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        } catch (Exception e) {
+            Logger.getLogger(Hangman.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    private static void highestStreakChecker() {
+        if (streak > highestStreak && streak > 1) {
+            System.out.println("You hit a new highest streak of " + streak + " games won in a row!");
+            highestStreak = streak;
+        }
     }
     
 }
