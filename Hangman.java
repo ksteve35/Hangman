@@ -80,13 +80,25 @@ public class Hangman {
                     clearCMD();
                     System.out.println(intro);
                 } else {
-                    System.out.println("It was fun playing with you! You're highest winning streak was " + highestStreak + " games won in row! Goodbye!");
+                    String outro = "It was fun playing with you! ";
+                    switch (highestStreak) {
+                        case 0:
+                            if (streak == 1)
+                                outro += "You're highest winning streak was 1 game won in row! Goodbye!";
+                            else
+                                outro += "Goodbye!";
+                            break;
+                        default:
+                            outro += "You're highest winning streak was " + highestStreak + " games won in row! Goodbye!";
+                    }
+                    System.out.println(outro);
                 }
             }
         }
     }
     
     public static void init(boolean b) {
+        
         /*
         This initialization method loads a dictionary of words into
         String[] words for random selection later on. The method also
@@ -165,6 +177,7 @@ public class Hangman {
     }
     
     public static void guessALetter() {
+        
         /*
         Infinite loop method that only ends when the player inputs a single
         letter character as their guess that hasn't already been guessed.
@@ -231,6 +244,14 @@ public class Hangman {
     }
 
     public static boolean answerCheck() {
+        
+        /*
+        This is a helper method to figure out whether or not the game
+        is over. If any of the letters from wordToGuess are still
+        undiscovered, this method returns false, otherwise every letter
+        has been discovered and this method returns true.
+        */
+        
         for (int i = 0; i < gameStatus.length; i++) {
             if (gameStatus[i].charAt(0) == '_')
                 return false;
@@ -313,6 +334,12 @@ public class Hangman {
     }
     
     public static void clearCMD() {
+        
+        /*
+        Simple helper method for clearing the Command Prompt if the game
+        is being played there. Currently only works for Windows.
+        */
+        
         try {
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
         } catch (Exception e) {
@@ -321,6 +348,14 @@ public class Hangman {
     }
 
     private static void highestStreakChecker() {
+        
+        /*
+        This method checks if the current winning streak is higher than
+        the highestStreak AND that the player has a streak to begin with.
+        This is to prevent printing "1 games won in a row!" since "games"
+        is plural.
+        */
+        
         if (streak > highestStreak && streak > 1) {
             System.out.println("You hit a new highest streak of " + streak + " games won in a row!");
             highestStreak = streak;
