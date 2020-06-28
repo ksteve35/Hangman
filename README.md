@@ -8,6 +8,7 @@ This is a text-based version of the letter-guessing game "Hangman", programmed i
 - ASCII Hangman art gives the classic game a classic feel.
 - Six (6) incorrect guesses or guessing every letter in the mystery word results in a game over.
 - Winning multiple games in a row results in a streak, with the player's highest streak being shown after you choose to quit playing at the end of a game.
+- At the end of the game, you'll be asked if you wish to play again.
 
 # Possible future features:
 - Difficulty selection
